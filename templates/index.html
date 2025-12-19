@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Toyota of Hollywood – Specials</title>
+</head>
+
+<body style="font-family: Arial; padding: 20px; background:#f2f2f2;">
+
+    <h1>Toyota of Hollywood – Specials</h1>
+    <p><strong>Specials found:</strong> {{ count }}</p>
+
+    {% for s in specials %}
+        <div style="
+            border: 2px solid #000;
+            padding: 16px;
+            margin-bottom: 24px;
+            max-width: 700px;
+            background: #fff;
+        ">
+
+            <h2>{{ s.title }}</h2>
+
+            {% if s.image %}
+                <img src="{{ s.image }}"
+                     style="width:100%; max-width:520px; margin-bottom:10px;">
+            {% endif %}
+
+            <p><strong>Monthly:</strong>
+                {% if s.monthly_payment %}
+                    ${{ s.monthly_payment }}/month
+                {% else %}
+                    N/A
+                {% endif %}
+            </p>
+
+            <p><strong>Term:</strong>
+                {% if s.term_months %}
+                    {{ s.term_months }} months
+                {% else %}
+                    N/A
+                {% endif %}
+            </p>
+
+            <p><strong>Due at signing:</strong>
+                {% if s.due_at_signing %}
+                    ${{ s.due_at_signing }}
+                {% else %}
+                    N/A
+                {% endif %}
+            </p>
+
+            <p><strong>Expires:</strong>
+                {{ s.expires or "N/A" }}
+            </p>
+
+        </div>
+    {% endfor %}
+
+</body>
+</html>
