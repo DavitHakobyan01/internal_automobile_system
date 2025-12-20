@@ -3,10 +3,10 @@ import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 
-from scrapers.base.base_scraper import BaseScraper
+from scrapers.base.toyota_base import ToyotaBaseScraper
 
 
-class NorthHollywoodToyotaScraper(BaseScraper):
+class NorthHollywoodToyotaScraper(ToyotaBaseScraper):
     dealer_name = "Toyota of North Hollywood"
     specials_url = "https://www.northhollywoodtoyota.com/specials/vehicle-specials"
 
