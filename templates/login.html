@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+        .card {
+            max-width: 420px;
+            margin: 80px auto;
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+        h1 {
+            margin-top: 0;
+        }
+        label {
+            display: block;
+            margin: 12px 0 6px;
+        }
+        select, input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        button {
+            margin-top: 18px;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background: #0b5ed7;
+            color: #fff;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .error {
+            color: #b00020;
+            margin-top: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Sign in</h1>
+        <p>Please choose a role and enter your login and password.</p>
+        <p><strong>Default credentials:</strong> admin/admin123 or user/user123</p>
+        <form method="post" action="{{ url_for('login') }}">
+            <label for="role">Login as</label>
+            <select id="role" name="role" required>
+                <option value="admin">Admin</option>
+                <option value="user">User</option>
+            </select>
+
+            <label for="username">Login</label>
+            <input id="username" name="username" type="text" required>
+
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" required>
+
+            <button type="submit">Log in</button>
+        </form>
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+    </div>
+</body>
+</html>

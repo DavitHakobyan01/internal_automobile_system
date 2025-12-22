@@ -23,7 +23,7 @@ class LongoToyotaScraper(ToyotaBaseScraper):
         "Dealer Specials Link",
     ]
 
-    def __init__(self, debug: bool = True, headless: bool = True, timeout_ms: int = 45000):
+    def __init__(self, debug: bool = False, headless: bool = True, timeout_ms: int = 45000):
         self.debug = debug
         self.headless = headless
         self.timeout_ms = timeout_ms

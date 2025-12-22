@@ -1,12 +1,3 @@
-# from scrapers.base.toyota_base import ToyotaBaseScraper
-
-
-# class ToyotaHollywoodScraper(ToyotaBaseScraper):
-#     dealer_name = "Toyota of Hollywood"
-#     brand = "Toyota"
-#     specials_url = "https://www.hollywoodtoyota.com/newspecials.htm"
-
-
 import re
 import requests
 import pandas as pd
