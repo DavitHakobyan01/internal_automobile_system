@@ -5,6 +5,13 @@ from scrapers.dealers.toyota.glendale import ToyotaGlendaleScraper
 from scrapers.dealers.toyota.glendale import ToyotaGlendaleScraper
 from scrapers.dealers.toyota.hamer import HamerToyotaScraper
 from scrapers.dealers.toyota.nortridge import NorthridgeToyotaScraper
+from scrapers.dealers.toyota.downtownla import DowntownLaToyotaScraper
+from scrapers.dealers.toyota.bobsmith import BobSmithToyotaScraper
+from scrapers.dealers.toyota.pasadena import PasadenaToyotaScraper
+from scrapers.dealers.toyota.longo import LongoToyotaScraper
+from scrapers.dealers.toyota.culver_city import CulverCityToyotaScraper
+from scrapers.dealers.toyota.santa_monica import ToyotaSantaMonicaScraper
+
 
 SCRAPERS = [
     ToyotaHollywoodScraper(),
@@ -12,5 +19,11 @@ SCRAPERS = [
     KeyesToyotaScraper(),
     ToyotaGlendaleScraper(),
     HamerToyotaScraper(),
-    NorthridgeToyotaScraper()
+    NorthridgeToyotaScraper(),
+    DowntownLaToyotaScraper(),
+    BobSmithToyotaScraper(),
+    PasadenaToyotaScraper(),
+    LongoToyotaScraper(),
+    CulverCityToyotaScraper(),
+    ToyotaSantaMonicaScraper()
 ]
