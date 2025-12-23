@@ -1,22 +1,30 @@
 <!DOCTYPE html>
+
 <html>
 <head>
     <title>Dealer Specials</title>
-    <style>
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid black; padding: 6px; }
-        th { background: #eee; }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/table.css') }}">
 </head>
 <body>
-    <div style="display: flex; justify-content: space-between; align-items: center;">
+    <header class="topbar">
         <h1>Dealer Specials (All Brands)</h1>
-        <div>
+        <div class="user-info">
             Logged in as <strong>{{ username }}</strong> ({{ role }})
-            <a href="{{ url_for('logout') }}" style="margin-left: 12px;">Log out</a>
+            <a href="{{ url_for('logout') }}">Log out</a>
         </div>
-    </div>
-    <p>Total specials: {{ total }}</p>
-    {{ tables[0] | safe }}
+    </header>
+
+<p>
+    Status:
+    <span id="progress">Waiting…</span>
+</p>
+
+<table id="specials-table">
+    <thead id="table-head"></thead>
+    <tbody id="table-body"></tbody>
+</table>
+
+<script src="{{ url_for('static', filename='js/specials_live.js') }}"></script>
+
 </body>
 </html>

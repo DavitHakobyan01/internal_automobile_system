@@ -1,132 +1,51 @@
 <!DOCTYPE html>
+
 <html>
 <head>
     <title>Dealer Specials</title>
-    <style>
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid black; padding: 6px; }
-        th { background: #eee; }
-        button {
-            padding: 8px 12px;
-            border: 1px solid #0b5ed7;
-            background: #0b5ed7;
-            color: #fff;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .modal-backdrop {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.45);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        .modal-backdrop.is-open {
-            display: flex;
-        }
-        .modal-window {
-            background: #fff;
-            border-radius: 8px;
-            padding: 20px;
-            width: 420px;
-            max-width: 90%;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
-        }
-        .modal-window h2 {
-            margin: 0 0 12px;
-            font-size: 18px;
-        }
-        .modal-field {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .modal-field input {
-            padding: 8px 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            margin-top: 16px;
-        }
-        .secondary-button {
-            background: #f1f1f1;
-            border-color: #ccc;
-            color: #222;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/table.css') }}">
 </head>
 <body>
-    <div style="display: flex; justify-content: space-between; align-items: center;">
+    <header class="topbar">
         <h1>Dealer Specials (All Brands)</h1>
-        <div>
+        <div class="user-info">
             Logged in as <strong>{{ username }}</strong> ({{ role }})
+            <a href="{{ url_for('logout') }}">Log out</a>
+        </div>
+    </header>
 
-            <a href="{{ url_for('logout') }}" style="margin-left: 12px;">Log out</a>
+<div class="actions">
+    <button id="open-manual-offers">Add offers manually</button>
+</div>
+
+<p>
+    Status:
+    <span id="progress">Waiting…</span>
+</p>
+
+<table id="specials-table">
+    <thead id="table-head"></thead>
+    <tbody id="table-body"></tbody>
+</table>
+
+<!-- Manual offer modal -->
+<div class="modal-backdrop" id="manual-offers-modal" aria-hidden="true">
+    <div class="modal-window">
+        <h2>Add offer manually</h2>
+
+        <label>
+            Offer link
+            <input type="url" id="manual-offer-link" placeholder="https://example.com/offer">
+        </label>
+
+        <div class="modal-actions">
+            <button class="secondary-button" id="cancel-manual-offer">Cancel</button>
+            <button id="continue-manual-offer">Continue</button>
         </div>
     </div>
-    <div style="margin: 12px 0;">
-        <button type="button" id="open-manual-offers">Add offers manually</button>
-    </div>
-    <p>Total specials: {{ total }}</p>
-    {{ tables[0] | safe }}
-    <div class="modal-backdrop" id="manual-offers-modal" aria-hidden="true">
-        <div class="modal-window" role="dialog" aria-modal="true" aria-labelledby="manual-offers-title">
-            <h2 id="manual-offers-title">Add offer manually</h2>
-            <div class="modal-field">
-                <label for="manual-offer-link">Offer link</label>
-                <input type="url" id="manual-offer-link" placeholder="https://example.com/offer" />
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="secondary-button" id="cancel-manual-offer">Cancel</button>
-                <button type="button" id="continue-manual-offer">Continue</button>
-            </div>
-        </div>
-    </div>
-    <script>
-        const openManualOffers = document.getElementById("open-manual-offers");
-        const manualOffersModal = document.getElementById("manual-offers-modal");
-        const cancelManualOffer = document.getElementById("cancel-manual-offer");
-        const continueManualOffer = document.getElementById("continue-manual-offer");
+</div>
 
-        const openModal = () => {
-            manualOffersModal.classList.add("is-open");
-            manualOffersModal.setAttribute("aria-hidden", "false");
-            document.getElementById("manual-offer-link").focus();
-        };
+<script src="{{ url_for('static', filename='js/specials_live.js') }}"></script>
 
-        const closeModal = () => {
-            manualOffersModal.classList.remove("is-open");
-            manualOffersModal.setAttribute("aria-hidden", "true");
-        };
-
-        openManualOffers.addEventListener("click", openModal);
-        cancelManualOffer.addEventListener("click", closeModal);
-        continueManualOffer.addEventListener("click", () => {
-            const linkValue = document.getElementById("manual-offer-link").value.trim();
-            const manualUrl = new URL("{{ url_for('manual_offers') }}", window.location.origin);
-            if (linkValue) {
-                manualUrl.searchParams.set("offer_link", linkValue);
-            }
-
-            window.open(manualUrl.toString(), "_blank", "noopener");
-            closeModal();
-        });
-        manualOffersModal.addEventListener("click", (event) => {
-            if (event.target === manualOffersModal) {
-                closeModal();
-            }
-        });
-        document.addEventListener("keydown", (event) => {
-            if (event.key === "Escape" && manualOffersModal.classList.contains("is-open")) {
-                closeModal();
-            }
-        });
-    </script>
 </body>
 </html>
