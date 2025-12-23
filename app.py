@@ -1,8 +1,9 @@
 import os
 
-from flask import Flask, redirect, render_template, request, session, url_for
-from registry import SCRAPERS
 import pandas as pd
+from flask import Flask, redirect, render_template, request, session, url_for
+
+from registry import SCRAPERS
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-secret-key")
@@ -41,7 +42,7 @@ def specials():
         return redirect(url_for("login"))
     dfs = [scraper.fetch_df() for scraper in SCRAPERS]
     df = pd.concat(dfs, ignore_index=True) if dfs else pd.DataFrame()
-    template_name = "admin_table.html" if role == "admin" else "user_table.html"
+    template_name = "admin_table.html" if role == "admin" else "login_table.html"
     return render_template(
         template_name,
         tables=[df.to_html(index=False)],
@@ -55,6 +56,17 @@ def specials():
 def logout():
     session.clear()
     return redirect(url_for("login"))
+
+
+@app.route("/manual-offers")
+def manual_offers():
+    role = session.get("role")
+    username = session.get("username")
+    if not role or not username:
+        return redirect(url_for("login"))
+
+    offer_link = request.args.get("offer_link", "")
+    return render_template("manual_offers.html", role=role, username=username, offer_link=offer_link)
 
 
 if __name__ == "__main__":
