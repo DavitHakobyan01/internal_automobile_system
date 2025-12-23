@@ -66,6 +66,7 @@
         <h1>Dealer Specials (All Brands)</h1>
         <div>
             Logged in as <strong>{{ username }}</strong> ({{ role }})
+
             <a href="{{ url_for('logout') }}" style="margin-left: 12px;">Log out</a>
         </div>
     </div>
@@ -91,6 +92,7 @@
         const openManualOffers = document.getElementById("open-manual-offers");
         const manualOffersModal = document.getElementById("manual-offers-modal");
         const cancelManualOffer = document.getElementById("cancel-manual-offer");
+        const continueManualOffer = document.getElementById("continue-manual-offer");
 
         const openModal = () => {
             manualOffersModal.classList.add("is-open");
@@ -105,6 +107,166 @@
 
         openManualOffers.addEventListener("click", openModal);
         cancelManualOffer.addEventListener("click", closeModal);
+        continueManualOffer.addEventListener("click", () => {
+            const manualOfferWindow = window.open("", "_blank");
+
+            if (!manualOfferWindow) {
+                return;
+            }
+
+            manualOfferWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Add Offer Manually</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            padding: 24px;
+                        }
+                        h1 {
+                            margin: 0 0 16px;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                        }
+                        th, td {
+                            border: 1px solid #ccc;
+                            padding: 8px;
+                        }
+                        th {
+                            background: #f5f5f5;
+                            text-align: left;
+                        }
+                        .dataframe-section {
+                            margin-top: 24px;
+                        }
+                        .dataframe-section h2 {
+                            margin: 0 0 12px;
+                        }
+                        input[type="text"] {
+                            width: 100%;
+                            padding: 6px;
+                            box-sizing: border-box;
+                        }
+                        .actions {
+                            margin-top: 16px;
+                            display: flex;
+                            gap: 8px;
+                        }
+                        button {
+                            padding: 8px 12px;
+                            border: 1px solid #0b5ed7;
+                            background: #0b5ed7;
+                            color: #fff;
+                            border-radius: 4px;
+                            cursor: pointer;
+                        }
+                        .secondary-button {
+                            background: #f1f1f1;
+                            border-color: #ccc;
+                            color: #222;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>Add offer manually</h1>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Model</th>
+                                <th>Monthly ($)</th>
+                                <th>Term (months)</th>
+                                <th>Due at Signing ($)</th>
+                                <th>MSRP ($)</th>
+                                <th>APR (%)</th>
+                                <th>Expires</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="text" id="manual-model" /></td>
+                                <td><input type="text" id="manual-monthly" /></td>
+                                <td><input type="text" id="manual-term" /></td>
+                                <td><input type="text" id="manual-due" /></td>
+                                <td><input type="text" id="manual-msrp" /></td>
+                                <td><input type="text" id="manual-apr" /></td>
+                                <td><input type="text" id="manual-expires" /></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="actions">
+                        <button type="button" id="manual-add-row">Add</button>
+                        <button type="button" id="manual-save">Save</button>
+                        <button type="button" id="manual-cancel" class="secondary-button">Cancel</button>
+                    </div>
+                    <div class="dataframe-section">
+                        <h2>Manual offers dataframe</h2>
+                        <table id="manual-dataframe">
+                            <thead>
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Monthly ($)</th>
+                                    <th>Term (months)</th>
+                                    <th>Due at Signing ($)</th>
+                                    <th>MSRP ($)</th>
+                                    <th>APR (%)</th>
+                                    <th>Expires</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <script>
+                        const columns = [
+                            { id: "manual-model", label: "Model" },
+                            { id: "manual-monthly", label: "Monthly ($)" },
+                            { id: "manual-term", label: "Term (months)" },
+                            { id: "manual-due", label: "Due at Signing ($)" },
+                            { id: "manual-msrp", label: "MSRP ($)" },
+                            { id: "manual-apr", label: "APR (%)" },
+                            { id: "manual-expires", label: "Expires" }
+                        ];
+                        const rows = [];
+                        const addButton = document.getElementById("manual-add-row");
+                        const dataframeBody = document.querySelector("#manual-dataframe tbody");
+                        const clearInputs = () => {
+                            columns.forEach(({ id }) => {
+                                const input = document.getElementById(id);
+                                if (input) {
+                                    input.value = "";
+                                }
+                            });
+                        };
+                        const renderDataframe = () => {
+                            dataframeBody.innerHTML = "";
+                            rows.forEach((row) => {
+                                const tr = document.createElement("tr");
+                                columns.forEach(({ id }) => {
+                                    const td = document.createElement("td");
+                                    td.textContent = row[id];
+                                    tr.appendChild(td);
+                                });
+                                dataframeBody.appendChild(tr);
+                            });
+                        };
+                        addButton.addEventListener("click", () => {
+                            const row = {};
+                            columns.forEach(({ id }) => {
+                                const value = document.getElementById(id)?.value.trim() || "";
+                                row[id] = value === "" ? "None" : value;
+                            });
+                            rows.push(row);
+                            renderDataframe();
+                            clearInputs();
+                        });
+                    <\\/script>
+                </body>
+                </html>
+            `);
+            manualOfferWindow.document.close();
+        });
         manualOffersModal.addEventListener("click", (event) => {
             if (event.target === manualOffersModal) {
                 closeModal();
