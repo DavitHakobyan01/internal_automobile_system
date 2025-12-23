@@ -11,44 +11,60 @@
         <header class="page__header">
             <h1>Add offer manually</h1>
             {% if offer_link %}
-                <p class="page__hint">Context link: <a href="{{ offer_link }}" target="_blank" rel="noopener noreferrer">{{ offer_link }}</a></p>
+                <p class="page__hint">
+                    Context link:
+                    <a href="{{ offer_link }}" target="_blank" rel="noopener noreferrer">
+                        {{ offer_link }}
+                    </a>
+                </p>
             {% endif %}
         </header>
 
         <section class="card">
             <h2 class="card__title">Offer details</h2>
+
             <div class="form-grid">
                 <label class="form-grid__field">
                     <span class="form-grid__label">Model</span>
-                    <input type="text" id="manual-model" class="form-grid__input" autocomplete="off">
+                    <input type="text" id="manual-model" class="form-grid__input">
                 </label>
+
                 <label class="form-grid__field">
                     <span class="form-grid__label">Monthly ($)</span>
-                    <input type="text" id="manual-monthly" class="form-grid__input" autocomplete="off">
+                    <input type="text" id="manual-monthly" class="form-grid__input">
                 </label>
+
                 <label class="form-grid__field">
                     <span class="form-grid__label">Term (months)</span>
-                    <input type="text" id="manual-term" class="form-grid__input" autocomplete="off">
+                    <input type="text" id="manual-term" class="form-grid__input">
                 </label>
+
                 <label class="form-grid__field">
                     <span class="form-grid__label">Due at Signing ($)</span>
-                    <input type="text" id="manual-due" class="form-grid__input" autocomplete="off">
+                    <input type="text" id="manual-due" class="form-grid__input">
                 </label>
+
                 <label class="form-grid__field">
                     <span class="form-grid__label">MSRP ($)</span>
-                    <input type="text" id="manual-msrp" class="form-grid__input" autocomplete="off">
+                    <input type="text" id="manual-msrp" class="form-grid__input">
                 </label>
+
                 <label class="form-grid__field">
                     <span class="form-grid__label">APR (%)</span>
-                    <input type="text" id="manual-apr" class="form-grid__input" autocomplete="off">
+                    <input type="text" id="manual-apr" class="form-grid__input">
                 </label>
+
                 <label class="form-grid__field">
                     <span class="form-grid__label">Expires</span>
-                    <input type="text" id="manual-expires" class="form-grid__input" autocomplete="off">
+                    <input type="text" id="manual-expires" class="form-grid__input">
                 </label>
             </div>
+
             <div class="actions">
                 <button type="button" id="manual-add-row" class="button">Add</button>
+                <button type="button" id="manual-remove-rows" class="button button--danger">
+                    Remove selected
+                </button>
                 <button type="button" id="manual-save" class="button button--secondary">Save</button>
                 <button type="button" id="manual-cancel" class="button button--ghost">Close</button>
             </div>
@@ -57,12 +73,16 @@
         <section class="card card--table">
             <div class="card__header">
                 <h2 class="card__title">Manual offers dataframe</h2>
-                <p class="card__description">Each click on Add appends the offer below.</p>
+                <p class="card__description">
+                    Each click on Add appends the offer below.
+                </p>
             </div>
+
             <div class="table-wrapper">
                 <table class="dataframe" id="manual-dataframe">
                     <thead>
                         <tr>
+                            <th>Select</th>
                             <th>Model</th>
                             <th>Monthly ($)</th>
                             <th>Term (months)</th>
