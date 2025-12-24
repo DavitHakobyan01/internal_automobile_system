@@ -63,6 +63,7 @@ def background_scrape():
     for scraper in SCRAPERS:
         try:
             df = scraper.fetch_df()
+            df.insert(0, "Dealership", getattr(scraper, "dealer_name", ""))
             SCRAPE_STATE["rows"].extend(df.to_dict("records"))
         except Exception as e:
             print(f"[ERROR] {scraper.__class__.__name__}: {e}")

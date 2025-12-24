@@ -33,6 +33,17 @@
                         value="{{ dealership }}"
                     >
                 </label>
+                <label class="form-grid__field">
+                    <span class="form-grid__label">Dealer Specials Link</span>
+                    <input
+                        type="url"
+                        id="manual-link"
+                        class="form-grid__input"
+                        placeholder="https://example.com/specials"
+                        value="{{ offer_link }}"
+                    >
+                </label>
+
 
                 <label class="form-grid__field">
                     <span class="form-grid__label">Model</span>
@@ -94,6 +105,7 @@
                         <tr>
                             <th>Select</th>
                             <th>Dealership</th>
+                            <th>Dealer Specials Link</th>
                             <th>Model</th>
                             <th>Monthly ($)</th>
                             <th>Term (months)</th>

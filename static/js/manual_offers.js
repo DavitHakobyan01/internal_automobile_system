@@ -1,6 +1,7 @@
 (() => {
     const columns = [
         { id: "manual-dealership", label: "Dealership" },
+        { id: "manual-link", label: "Dealer Specials Link" },
         { id: "manual-model", label: "Model" },
         { id: "manual-monthly", label: "Monthly ($)" },
         { id: "manual-term", label: "Term (months)" },
@@ -17,11 +18,12 @@
     const saveButton = document.getElementById("manual-save");
     const cancelButton = document.getElementById("manual-cancel");
     const dealershipInput = document.getElementById("manual-dealership");
+    const linkInput = document.getElementById("manual-link");
     const dataframeBody = document.querySelector("#manual-dataframe tbody");
 
     const clearInputs = () => {
         columns.forEach(({ id }) => {
-            if (id === "manual-dealership") return;
+            if (id === "manual-dealership" || id === "manual-link") return;
 
             const input = document.getElementById(id);
             if (input) input.value = "";
