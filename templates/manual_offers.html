@@ -25,6 +25,16 @@
 
             <div class="form-grid">
                 <label class="form-grid__field">
+                    <span class="form-grid__label">Dealership</span>
+                    <input
+                        type="text"
+                        id="manual-dealership"
+                        class="form-grid__input"
+                        value="{{ dealership }}"
+                    >
+                </label>
+
+                <label class="form-grid__field">
                     <span class="form-grid__label">Model</span>
                     <input type="text" id="manual-model" class="form-grid__input">
                 </label>
@@ -83,6 +93,7 @@
                     <thead>
                         <tr>
                             <th>Select</th>
+                            <th>Dealership</th>
                             <th>Model</th>
                             <th>Monthly ($)</th>
                             <th>Term (months)</th>

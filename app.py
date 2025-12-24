@@ -1,3 +1,4 @@
+import json
 import os
 import threading
 import time
@@ -9,6 +10,7 @@ from registry import SCRAPERS
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-secret-key")
+MANUAL_OFFERS_DIR = os.path.join(os.path.dirname(__file__), "manual_offers")
 
 
 CREDENTIALS = {
@@ -96,6 +98,39 @@ def scrape_results():
     return jsonify(SCRAPE_STATE["rows"])
 
 
+@app.route("/manual-offers/save", methods=["POST"])
+def save_manual_offers():
+    payload = request.get_json(silent=True) or {}
+    dealership = (payload.get("dealership") or "").strip()
+    offers = payload.get("offers") or []
+
+    if not dealership:
+        return jsonify({"error": "Dealership name is required."}), 400
+
+    if not isinstance(offers, list) or len(offers) == 0:
+        return jsonify({"error": "At least one offer is required."}), 400
+
+    sanitized_dealership = "".join(
+        c if c.isalnum() or c in ("-", "_") else "_" for c in dealership
+    )
+    sanitized_dealership = sanitized_dealership or "manual_offers"
+
+    os.makedirs(MANUAL_OFFERS_DIR, exist_ok=True)
+    file_path = os.path.join(MANUAL_OFFERS_DIR, f"{sanitized_dealership}.json")
+
+    with open(file_path, "w", encoding="utf-8") as f:
+        json.dump(offers, f, indent=2)
+
+    return jsonify(
+        {
+            "status": "saved",
+            "file": file_path,
+            "message": f"Saved manual offers to {file_path}.",
+        }
+    )
+
+
+
 # ---------------- PAGES ----------------
 
 @app.route("/specials")
@@ -125,11 +160,13 @@ def manual_offers():
         return redirect(url_for("login"))
 
     offer_link = request.args.get("offer_link", "")
+    dealership = request.args.get("dealership", "")
     return render_template(
         "manual_offers.html",
         role=role,
         username=username,
         offer_link=offer_link,
+        dealership=dealership,
     )
 
 

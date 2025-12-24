@@ -63,6 +63,8 @@
     if (openBtn && modal) {
         const cancelBtn = document.getElementById("cancel-manual-offer");
         const continueBtn = document.getElementById("continue-manual-offer");
+        const linkInput = document.getElementById("manual-offer-link");
+        const dealershipInput = document.getElementById("manual-dealership-name");
 
         openBtn.addEventListener("click", () => {
             modal.classList.add("is-open");
@@ -73,13 +75,12 @@
         });
 
         continueBtn.addEventListener("click", () => {
-            const link = document
-                .getElementById("manual-offer-link")
-                .value
-                .trim();
+            const link = linkInput?.value.trim();
+            const dealership = dealershipInput?.value.trim();
 
             const url = new URL("/manual-offers", window.location.origin);
             if (link) url.searchParams.set("offer_link", link);
+            if (dealership) url.searchParams.set("dealership", dealership);
 
             window.open(url.toString(), "_blank", "noopener");
             modal.classList.remove("is-open");

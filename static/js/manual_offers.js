@@ -1,5 +1,6 @@
 (() => {
     const columns = [
+        { id: "manual-dealership", label: "Dealership" },
         { id: "manual-model", label: "Model" },
         { id: "manual-monthly", label: "Monthly ($)" },
         { id: "manual-term", label: "Term (months)" },
@@ -15,10 +16,13 @@
     const removeButton = document.getElementById("manual-remove-rows");
     const saveButton = document.getElementById("manual-save");
     const cancelButton = document.getElementById("manual-cancel");
+    const dealershipInput = document.getElementById("manual-dealership");
     const dataframeBody = document.querySelector("#manual-dataframe tbody");
 
     const clearInputs = () => {
         columns.forEach(({ id }) => {
+            if (id === "manual-dealership") return;
+
             const input = document.getElementById(id);
             if (input) input.value = "";
         });
@@ -95,16 +99,47 @@
         renderDataframe();
     });
 
-    saveButton?.addEventListener("click", () => {
-        const payload = rows.map(row =>
-            columns.reduce((acc, { id, label }) => {
-                acc[label] = row[id];
-                return acc;
-            }, {})
-        );
+    saveButton?.addEventListener("click", async () => {
+        const dealership = dealershipInput?.value.trim();
 
-        console.table(payload);
-        alert("Manual offers saved locally. Hook API when ready.");
+        if (!dealership) {
+            alert("Enter the dealership name before saving.");
+            dealershipInput?.focus();
+            return;
+        }
+
+        if (rows.length === 0) {
+            alert("Add at least one offer before saving.");
+            return;
+        }
+
+        const payload = {
+            dealership,
+            offers: rows.map(row =>
+                columns.reduce((acc, { id, label }) => {
+                    acc[label] = row[id];
+                    return acc;
+                }, {})
+            )
+        };
+
+        try {
+            const response = await fetch("/manual-offers/save", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            const body = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(body.error || "Failed to save manual offers.");
+            }
+
+            alert(body.message || "Manual offers saved.");
+        } catch (error) {
+            alert(error.message);
+        }
     });
 
     cancelButton?.addEventListener("click", () => {
