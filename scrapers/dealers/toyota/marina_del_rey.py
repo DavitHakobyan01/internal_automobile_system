@@ -72,7 +72,6 @@ class MarinaDelReyToyotaScraper(ToyotaBaseScraper):
 
             rows.append(
                 {
-                    "APR (%)": None,
                     "Dealer Specials Link": self.specials_url,
                     "Due at Signing ($)": due,
                     "Expires": expires,

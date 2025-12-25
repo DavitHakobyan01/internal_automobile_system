@@ -77,7 +77,6 @@ class ToyotaGlendaleScraper(ToyotaBaseScraper):
                     "Term (months)": None,      # lease term is image-only
                     "Due at Signing ($)": due,
                     "MSRP ($)": None,
-                    "APR (%)": None,
                     "Expires": expires or None,
                     "Dealer Specials Link": self.specials_url,  # <-- ALWAYS this page
                 }
@@ -91,7 +90,6 @@ class ToyotaGlendaleScraper(ToyotaBaseScraper):
                 "Term (months)",
                 "Due at Signing ($)",
                 "MSRP ($)",
-                "APR (%)",
                 "Expires",
                 "Dealer Specials Link",
             ],

@@ -195,7 +195,6 @@ class HamerToyotaScraper(ToyotaBaseScraper):
                     "Term (months)": term,
                     "Due at Signing ($)": due,
                     "MSRP ($)": msrp,
-                    "APR (%)": None,
                     "Expires": c.get("endDate"),
                     "Dealer Specials Link": self.specials_url,
                     "offer_id": c.get("offerId") or c.get("id"),

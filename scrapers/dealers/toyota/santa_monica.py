@@ -116,7 +116,6 @@ class ToyotaSantaMonicaScraper(ToyotaBaseScraper):
                     or self.money_to_int(self.extract(r"Total\s*SRP\s*\$([\d,]+)", disclaimer))
                     or self.money_to_int(self.extract(r"\bMSRP\s*\$([\d,]+)", disclaimer))
                 ),
-                "APR (%)": None,
                 "Expires": expires,
                 "Dealer Specials Link": self.specials_url,
             })

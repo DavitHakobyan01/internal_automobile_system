@@ -43,8 +43,6 @@ class KeyesToyotaScraper(ToyotaBaseScraper):
                     flags=re.IGNORECASE,
                 ).strip()
 
-            apr_text = self.extract(r"(\d+(?:\.\d+)?)%\s*APR", disclaimer)
-            apr = float(apr_text) if apr_text else None
             monthly_text = self.extract(r"\$([\d,]+)\s*per\s*month", disclaimer)
             if not monthly_text:
                 continue
@@ -61,7 +59,6 @@ class KeyesToyotaScraper(ToyotaBaseScraper):
                 "MSRP ($)": self.money_to_int(
                     self.extract(r"(?:TSRP|MSRP)\s*\$([\d,]+)", disclaimer)
                 ),
-                "APR (%)": apr,
                 "Expires": expires,
                 "Dealer Specials Link": self.specials_url,
             })

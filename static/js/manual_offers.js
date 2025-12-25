@@ -7,7 +7,6 @@
         { id: "manual-term", label: "Term (months)" },
         { id: "manual-due", label: "Due at Signing ($)" },
         { id: "manual-msrp", label: "MSRP ($)" },
-        { id: "manual-apr", label: "APR (%)" },
         { id: "manual-expires", label: "Expires" }
     ];
 

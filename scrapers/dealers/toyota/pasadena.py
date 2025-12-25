@@ -229,7 +229,6 @@ class PasadenaToyotaScraper(ToyotaBaseScraper):
                     "Term (months)",
                     "Due at Signing ($)",
                     "MSRP ($)",
-                    "APR (%)",
                     "Expires",
                     "Dealer Specials Link",
                 ]
@@ -247,9 +246,6 @@ class PasadenaToyotaScraper(ToyotaBaseScraper):
             }
         )
 
-        # Pasadena lease rows don't have APR
-        df["APR (%)"] = None
-
         # Use your system-wide expiry value (matches your table)
         df["Expires"] = "01/05/2026"
 
@@ -260,7 +256,6 @@ class PasadenaToyotaScraper(ToyotaBaseScraper):
                 "Term (months)",
                 "Due at Signing ($)",
                 "MSRP ($)",
-                "APR (%)",
                 "Expires",
                 "Dealer Specials Link",
             ]

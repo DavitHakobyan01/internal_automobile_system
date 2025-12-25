@@ -69,7 +69,6 @@ class ToyotaHollywoodScraper(ToyotaBaseScraper):
                 "MSRP ($)": self.money_to_int(
                     self.extract(r"TSRP\s*\$([\d,]+)", disclaimer)
                 ),
-                "APR (%)": None,
                 "Expires": promo.get("endDateDisplay"),
                 "Dealer Specials Link": self.specials_url,
             })

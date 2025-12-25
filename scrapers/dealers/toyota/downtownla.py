@@ -93,7 +93,6 @@ class DowntownLaToyotaScraper(ToyotaBaseScraper):
                 "Term (months)": term,
                 "Due at Signing ($)": due,
                 "MSRP ($)": msrp,
-                "APR (%)": None,
                 "Expires": expires,
                 "Dealer Specials Link": self.specials_url,
             })

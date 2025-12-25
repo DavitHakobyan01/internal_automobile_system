@@ -40,7 +40,6 @@
         }, new Map());
 
         const columnOrder = [
-            "APR (%)",
             "Due at Signing ($)",
             "Expires",
             "MSRP ($)",

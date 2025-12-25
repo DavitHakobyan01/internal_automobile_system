@@ -117,7 +117,6 @@ class NorwalkToyotaScraper(ToyotaBaseScraper):
                 return m.group(1) if m else None
 
             rows.append({
-                "APR (%)": None,
                 "Dealer Specials Link": self.specials_url,
                 "Due at Signing ($)": self.money_to_int(grab(self.RE_DUE_VAL)),
                 "Expires": grab(self.RE_EXPIRES_VAL),
