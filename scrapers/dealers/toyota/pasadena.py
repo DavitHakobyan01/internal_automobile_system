@@ -37,7 +37,7 @@ class PasadenaToyotaScraper(ToyotaBaseScraper):
     @staticmethod
     def _money_to_int(s: Optional[str]) -> Optional[int]:
         # FIX: reference this class, not ToyotaPasadenaSpecialsScraper
-        v = PasadenaScraper._money_to_float(s)
+        v = PasadenaToyotaScraper._money_to_float(s)
         if v is None:
             return None
         return int(round(v))
