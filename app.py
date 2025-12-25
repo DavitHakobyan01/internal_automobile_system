@@ -27,6 +27,44 @@ SCRAPE_STATE = {
     "rows": [],
 }
 
+
+def load_manual_offers():
+    """Load saved manual offers from disk and return them as row dictionaries."""
+    rows = []
+
+    if not os.path.isdir(MANUAL_OFFERS_DIR):
+        return rows
+
+    for filename in os.listdir(MANUAL_OFFERS_DIR):
+        if not filename.lower().endswith(".json"):
+            continue
+
+        path = os.path.join(MANUAL_OFFERS_DIR, filename)
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                offers = json.load(f)
+        except (OSError, json.JSONDecodeError) as e:
+            print(f"[ERROR] Failed to load manual offers from {filename}: {e}")
+            continue
+
+        if not isinstance(offers, list):
+            print(f"[ERROR] Manual offers file {filename} does not contain a list.")
+            continue
+
+        for offer in offers:
+            if not isinstance(offer, dict):
+                continue
+
+            row = dict(offer)
+            row.setdefault("Dealership", os.path.splitext(filename)[0])
+            rows.append(row)
+
+    return rows
+
+# Seed the in-memory table with manual offers so they show up immediately.
+SCRAPE_STATE["rows"] = load_manual_offers()
+
+
 # ---------------- AUTH ----------------
 
 @app.route("/", methods=["GET", "POST"])
@@ -58,7 +96,7 @@ def logout():
 def background_scrape():
     SCRAPE_STATE["running"] = True
     SCRAPE_STATE["progress"] = 0
-    SCRAPE_STATE["rows"] = []
+    SCRAPE_STATE["rows"] = load_manual_offers()
 
     for scraper in SCRAPERS:
         try:
