@@ -34,9 +34,7 @@ class MarinaDelReyToyotaScraper(ToyotaBaseScraper):
             model = card.select_one("h2")
             model = model.get_text(strip=True) if model else None
 
-            # ---------- LINK ----------
-            link_el = card.select_one("a.dv-offers-cta-link-plain")
-            link = urljoin(self.specials_url, link_el["href"]) if link_el else None
+
 
             # ---------- EXPIRES ----------
             expires_el = card.select_one("p.dv-offers-specials-expires span")
@@ -75,7 +73,7 @@ class MarinaDelReyToyotaScraper(ToyotaBaseScraper):
             rows.append(
                 {
                     "APR (%)": None,
-                    "Dealer Specials Link": link,
+                    "Dealer Specials Link": self.specials_url,
                     "Due at Signing ($)": due,
                     "Expires": expires,
                     "MSRP ($)": msrp,
