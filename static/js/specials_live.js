@@ -3,11 +3,9 @@
     fetch("/start-scraping");
 
     const progressEl = document.getElementById("progress");
-    const headEl = document.getElementById("table-head");
-    const bodyEl = document.getElementById("table-body");
+    const listEl = document.getElementById("specials-list");
 
     let lastRowCount = 0;
-    let headerRendered = false;
 
     const poll = setInterval(async () => {
         const status = await fetch("/scrape-status").then(r => r.json());
@@ -15,15 +13,9 @@
 
         progressEl.textContent = `${status.progress} / ${status.total}`;
 
-        // Render header once
-        if (rows.length && !headerRendered) {
-            renderHeader(rows[0]);
-            headerRendered = true;
-        }
 
-        // Append only new rows
         if (rows.length > lastRowCount) {
-            appendRows(rows.slice(lastRowCount));
+            renderGrouped(rows);
             lastRowCount = rows.length;
         }
 
@@ -33,27 +25,116 @@
         }
     }, 1000);
 
-    function renderHeader(sampleRow) {
-        headEl.innerHTML = "";
-        const tr = document.createElement("tr");
-        Object.keys(sampleRow).forEach(key => {
-            const th = document.createElement("th");
-            th.textContent = key;
-            tr.appendChild(th);
+    function renderGrouped(rows) {
+        if (!listEl) return;
+
+        listEl.innerHTML = "";
+
+        const grouped = rows.reduce((acc, row) => {
+            const dealership = row.Dealership || "Unknown Dealership";
+            if (!acc.has(dealership)) {
+                acc.set(dealership, []);
+            }
+            acc.get(dealership).push(row);
+            return acc;
+        }, new Map());
+
+        const columnOrder = [
+            "APR (%)",
+            "Due at Signing ($)",
+            "Expires",
+            "MSRP ($)",
+            "Model",
+            "Monthly ($)",
+            "Term (months)",
+        ];
+
+        grouped.forEach((offers, dealership) => {
+            const section = document.createElement("section");
+            section.className = "dealership-section";
+
+            const header = document.createElement("div");
+            header.className = "dealership-header";
+
+            const title = document.createElement("h2");
+
+            const commonLink = findDealershipLink(offers);
+            if (commonLink) {
+                const anchor = document.createElement("a");
+                anchor.href = commonLink;
+                anchor.target = "_blank";
+                anchor.rel = "noopener";
+                anchor.textContent = dealership;
+                title.appendChild(anchor);
+            } else {
+                title.textContent = dealership;
+            }
+            header.appendChild(title);
+
+            const count = document.createElement("span");
+            count.className = "dealership-count";
+            count.textContent = `${offers.length} offer${offers.length === 1 ? "" : "s"}`;
+            header.appendChild(count);
+
+            section.appendChild(header);
+
+            const table = document.createElement("table");
+            table.className = "dealership-table";
+
+            const thead = document.createElement("thead");
+            const headerRow = document.createElement("tr");
+            columnOrder.forEach((label) => {
+                const th = document.createElement("th");
+                th.scope = "col";
+                th.textContent = label;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            const tbody = document.createElement("tbody");
+            offers.forEach((offer) => {
+                const rowEl = document.createElement("tr");
+                columnOrder.forEach((key) => {
+                    const td = document.createElement("td");
+                    const value = offer[key];
+
+                    if (typeof value === "string" && value.startsWith("http")) {
+                        const link = document.createElement("a");
+                        link.href = value;
+                        link.target = "_blank";
+                        link.rel = "noopener";
+                        link.textContent = value;
+                        td.appendChild(link);
+                    } else {
+                        td.textContent = value ?? "";
+                    }
+
+                    rowEl.appendChild(td);
+                });
+                tbody.appendChild(rowEl);
+            });
+
+            table.appendChild(tbody);
+            section.appendChild(table);
+            listEl.appendChild(section);
         });
-        headEl.appendChild(tr);
     }
 
-    function appendRows(rows) {
-        rows.forEach(row => {
-            const tr = document.createElement("tr");
-            Object.values(row).forEach(val => {
-                const td = document.createElement("td");
-                td.textContent = val ?? "";
-                tr.appendChild(td);
+    function findDealershipLink(offers) {
+        for (const offer of offers) {
+            const linkEntry = Object.entries(offer).find(([key, value]) => {
+                if (key === "Dealership") return false;
+                return typeof value === "string" && value.startsWith("http");
             });
-            bodyEl.appendChild(tr);
-        });
+
+            if (linkEntry) {
+                return linkEntry[1];
+            }
+        }
+
+        return null;
+
     }
 
     // ---------------- MANUAL OFFERS MODAL ----------------
