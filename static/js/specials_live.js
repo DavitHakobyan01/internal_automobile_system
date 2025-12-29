@@ -13,6 +13,7 @@
 
         progressEl.textContent = `${status.progress} / ${status.total}`;
 
+        // renderGrouped(rows);
 
         if (rows.length > lastRowCount) {
             renderGrouped(rows);

@@ -34,6 +34,7 @@ SCRAPERS = [
     MarinaDelReyToyotaScraper(),
     NorwalkToyotaScraper(),
     SouthBayToyotaScraper(),
-    ManhattanBeachToyotaScraper(),
-    ToyotaTorranceScraper()
+    ToyotaTorranceScraper(),
+    ManhattanBeachToyotaScraper()
+    
 ]

@@ -7,9 +7,13 @@ from scrapers.base.toyota_base import ToyotaBaseScraper
 URL = "https://www.torrancetoyota.com/api/widget/ws-specials/promos"
 
 HEADERS = {
-    "Content-Type": "application/json",
+    "Content-Type": "application/json;charset=UTF-8",
     "Accept": "application/json",
     "User-Agent": "Mozilla/5.0",
+    "Origin": "https://www.torrancetoyota.com",
+    "Referer": "https://www.torrancetoyota.com/promotions/new/index.htm",
+    "x-page-id": "dchtorrancetoyota_SITEBUILDER_PROMOTIONS_LISTING_V3_NEW",
+    "x-page-name": "PROMOTIONS_LISTING_NEW",
 }
 
 PAYLOAD = {
@@ -28,15 +32,15 @@ PAYLOAD = {
             "limitByTagsType": "INCLUDE",
             "listingConfigId": "auto-new",
             "specialCount": "30",
-            "excludeModelOffersWithoutPhotos": False,
+            "excludeModelOffersWithoutPhotos": "false",
             "vehicleId": ""
         },
         "eo": {
-            "pixallId": "",
-            # Enable personalization
+            "pixallId": "oZfXlxHR6qSgfBblIvuh7dze",
+            "enablePersonalization": "true",
         },
-        # Remove Vcda request
-        # Require account info
+        "removeVcdaRequest": "true",
+        "requireAccountInfo": "true",
     }
 }
 
@@ -45,6 +49,32 @@ class ToyotaTorranceScraper(ToyotaBaseScraper):
     dealer_name = "DCH Toyota of Torrance"
     specials_url = "https://www.torrancetoyota.com/promotions/new/index.htm"
 
+    def _lease_block(self, text: str) -> str:
+        """
+        Extract only the lease portion if the disclaimer contains both lease and finance sections.
+        Works for:
+        - "Lease: ... Finance: ..."
+        - "Qualified lessees can lease ... (no explicit 'Lease:')"
+        """
+        t = (text or "").strip()
+        if not t:
+            return ""
+
+        # If "Lease:" exists, start there
+        m = re.search(r"\bLease\s*:\s*", t, flags=re.I)
+        if m:
+            t = t[m.end():]
+
+        # Cut at "Finance:" if present
+        t = re.split(r"\bFinance\s*:\s*", t, maxsplit=1, flags=re.I)[0]
+
+        return t.strip()
+
+    def _is_lease_offer(self, disclaimer_full: str) -> bool:
+        lease = self._lease_block(disclaimer_full).lower()
+        # Require the actual lease sentence so finance-only promos (Tundra) are excluded
+        return "qualified lessees can lease" in lease
+
     def fetch_df(self) -> pd.DataFrame:
         resp = requests.post(URL, json=PAYLOAD, headers=HEADERS, timeout=15)
         resp.raise_for_status()
@@ -52,13 +82,17 @@ class ToyotaTorranceScraper(ToyotaBaseScraper):
 
         rows = []
 
-        for promo in data.get("promos", []):
-            disclaimer = promo.get("disclaimer", "") or ""
+        for promo in data.get("promos", []) or []:
+            disclaimer_full = promo.get("disclaimer", "") or ""
+            if not self._is_lease_offer(disclaimer_full):
+                continue
+
+            disclaimer = self._lease_block(disclaimer_full)
 
             rows.append({
                 "Model": promo.get("title"),
                 "Monthly ($)": self.money_to_int(
-                    self.extract(r"\$(\d+)\s*per\s*month", disclaimer)
+                    self.extract(r"\$([\d,]+)\s*per\s*month", disclaimer)
                 ),
                 "Term (months)": self.money_to_int(
                     self.extract(r"for\s*(\d+)\s*months", disclaimer)
@@ -67,11 +101,10 @@ class ToyotaTorranceScraper(ToyotaBaseScraper):
                     self.extract(r"\$([\d,]+)\s*Due\s*At\s*Signing", disclaimer)
                 ),
                 "MSRP ($)": self.money_to_int(
-                    self.extract(r"TSRP\s*\$([\d,]+)", disclaimer)
+                    self.extract(r"(?:Total\s*SRP\s*(?:of)?|MSRP|TSRP)\s*\$([\d,]+)", disclaimer)
                 ),
                 "Expires": promo.get("endDateDisplay"),
                 "Dealer Specials Link": self.specials_url,
             })
 
         return pd.DataFrame(rows)
-
