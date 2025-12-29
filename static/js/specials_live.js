@@ -140,6 +140,7 @@
     // ---------------- MANUAL OFFERS MODAL ----------------
     const openBtn = document.getElementById("open-manual-offers");
     const modal = document.getElementById("manual-offers-modal");
+    const scrapeMonitorBtn = document.getElementById("open-scrape-monitor");
 
     if (openBtn && modal) {
         const cancelBtn = document.getElementById("cancel-manual-offer");
@@ -167,4 +168,11 @@
             modal.classList.remove("is-open");
         });
     }
+
+        if (scrapeMonitorBtn) {
+        scrapeMonitorBtn.addEventListener("click", () => {
+            window.open("/scrape-monitor", "_blank", "noopener");
+        });
+    }
+    
 })();

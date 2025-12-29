@@ -202,6 +202,20 @@ def manual_offers():
         dealership=request.args.get("dealership", ""),
     )
 
+@app.route("/scrape-monitor")
+def scrape_monitor():
+    if not session.get("role"):
+        return redirect(url_for("login"))
+
+    if session["role"] != "admin":
+        return redirect(url_for("specials"))
+
+    return render_template(
+        "scrape_monitor.html",
+        role=session["role"],
+        username=session["username"],
+    )
+
 @app.route("/manual-offers/save", methods=["POST"])
 def save_manual_offers():
     payload = request.get_json(silent=True) or {}

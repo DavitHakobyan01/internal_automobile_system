@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Scrape Monitor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/table.css') }}">
+</head>
+<body>
+    <header class="topbar">
+        <h1>Scrape Monitor</h1>
+        <div class="user-info">
+            Logged in as <strong>{{ username }}</strong> ({{ role }})
+            <a href="{{ url_for('logout') }}">Log out</a>
+        </div>
+    </header>
+</body>
+</html>
