@@ -2,11 +2,20 @@ import json
 import os
 import threading
 import math
+from datetime import date, datetime
+
 import numpy as np
 import pandas as pd
 
 from flask import Flask, redirect, render_template, request, session, url_for, jsonify
 from registry import SCRAPERS
+from scraper_monitor import (
+    SCRAPER_MONITOR,
+    finish_monitoring,
+    record_dealer_exception,
+    record_dealer_result,
+    start_monitoring,
+)
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-secret-key")
@@ -50,6 +59,18 @@ def sanitize(obj):
         return None
     return obj
 
+
+def to_iso(obj):
+    """Recursively convert datetime values to ISO strings."""
+    if isinstance(obj, dict):
+        return {k: to_iso(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [to_iso(v) for v in obj]
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    return obj
+
+
 # ---------------- MANUAL OFFERS ----------------
 
 def load_manual_offers():
@@ -86,19 +107,20 @@ def load_manual_offers():
 # ---------------- BACKGROUND SCRAPER ----------------
 
 def background_scrape():
+    run_date = date.today()
     with SCRAPE_LOCK:
         SCRAPE_STATE["running"] = True
         SCRAPE_STATE["progress"] = 0
         SCRAPE_STATE["rows"].clear()
         SCRAPE_STATE["rows"].extend(load_manual_offers())
 
+    start_monitoring()
+
+
     for scraper in SCRAPERS:
+        dealer = getattr(scraper, "dealer_name", None) or scraper.__class__.__name__
         try:
             df = scraper.fetch_df()
-
-            dealer = getattr(scraper, "dealer_name", None)
-            if not dealer:
-                dealer = scraper.__class__.__name__
 
             df.insert(0, "Dealership", dealer)
 
@@ -112,16 +134,21 @@ def background_scrape():
             with SCRAPE_LOCK:
                 SCRAPE_STATE["rows"].extend(records)
 
+            record_dealer_result(dealer, records, run_date=run_date)
+
             print(f"[OK] {dealer}: {len(records)} rows")
 
         except Exception as e:
             print(f"[ERROR] {scraper.__class__.__name__}: {e}")
+            record_dealer_exception(dealer, e)
 
         with SCRAPE_LOCK:
             SCRAPE_STATE["progress"] += 1
+            
 
     with SCRAPE_LOCK:
         SCRAPE_STATE["running"] = False
+    finish_monitoring()
 
 # ---------------- API ----------------
 
@@ -148,6 +175,24 @@ def scrape_results():
     with SCRAPE_LOCK:
         clean = sanitize(SCRAPE_STATE["rows"])
         return jsonify(clean)
+    
+@app.route("/scraper-monitor")
+def scraper_monitor_status():
+    monitor_snapshot = to_iso(SCRAPER_MONITOR)
+    return jsonify(sanitize(monitor_snapshot))
+
+
+@app.route("/scrape-monitor")
+def scrape_monitor_page():
+    if not session.get("role"):
+        return redirect(url_for("login"))
+
+    return render_template(
+        "scrape_monitor.html",
+        role=session["role"],
+        username=session["username"],
+    )
+
 
 # ---------------- AUTH ROUTES ----------------
 

@@ -12,5 +12,44 @@
             <a href="{{ url_for('logout') }}">Log out</a>
         </div>
     </header>
+
+    <main>
+        <section class="monitor-summary">
+            <div class="summary-item">
+                <div class="summary-label">Running</div>
+                <div id="monitor-running" class="summary-value">—</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">Started at</div>
+                <div id="monitor-started" class="summary-value">—</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">Last update</div>
+                <div id="monitor-updated" class="summary-value">—</div>
+            </div>
+        </section>
+
+        <div class="table-wrapper">
+            <table class="dealership-table" aria-describedby="monitor-updated">
+                <thead>
+                    <tr>
+                        <th scope="col">Dealer</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Total rows</th>
+                        <th scope="col">Invalid required</th>
+                        <th scope="col">Attention rows</th>
+                        <th scope="col">Top issues</th>
+                    </tr>
+                </thead>
+                <tbody id="monitor-table-body">
+                    <tr class="empty-row">
+                        <td colspan="6">Waiting for scrape data…</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/scrape_monitor.js') }}"></script>
 </body>
 </html>
