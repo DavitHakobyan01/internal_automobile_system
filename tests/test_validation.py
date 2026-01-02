@@ -1,6 +1,5 @@
 from datetime import date
 
-import pytest
 
 from validation import validate_row
 
@@ -85,3 +84,39 @@ def test_msrp_invalid_adds_warning_but_keeps_valid_status():
 
     assert result["row_status"] == "VALID"
     assert "msrp provided but invalid" in result["moderate_warnings"]
+
+def test_validate_row_supports_four_digit_year_expires():
+    run_date = date(2024, 1, 1)
+    result = validate_row(
+        {
+            "monthly": "$199",
+            "due_at_signing": "$1,999",
+            "model": "RAV4",
+            "expires": "01/05/2026",
+            "term_months": "36",
+        },
+        run_date,
+    )
+
+    assert result["normalized_row"]["expires"].year == 2026
+    assert result["row_status"] == "VALID"
+
+
+def test_validate_row_supports_hyphenated_expires_date():
+    run_date = date(2024, 3, 1)
+    result = validate_row(
+        {
+            "monthly": "$299",
+            "due_at_signing": "$2,999",
+            "model": "Camry",
+            "expires": "04-05-2026",
+            "term_months": "36",
+            "msrp": "$31,000",
+        },
+        run_date,
+    )
+
+    assert result["normalized_row"]["expires"].year == 2026
+    assert result["normalized_row"]["expires"].month == 4
+    assert result["normalized_row"]["expires"].day == 5
+    assert result["row_status"] == "VALID"

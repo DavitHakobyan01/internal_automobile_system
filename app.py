@@ -11,7 +11,7 @@ from flask import Flask, redirect, render_template, request, session, url_for, j
 from registry import SCRAPERS
 from scraper_monitor import (
     SCRAPER_MONITOR,
-    finish_monitoring,
+    # finish_monitoring,
     record_dealer_exception,
     record_dealer_result,
     start_monitoring,
@@ -148,7 +148,7 @@ def background_scrape():
 
     with SCRAPE_LOCK:
         SCRAPE_STATE["running"] = False
-    finish_monitoring()
+    # finish_monitoring()
 
 # ---------------- API ----------------
 

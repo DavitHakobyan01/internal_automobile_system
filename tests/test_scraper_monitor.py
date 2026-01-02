@@ -1,8 +1,7 @@
-from datetime import date
+from datetime import date, datetime
 
-import pytest
 
-from validation import compute_dealer_health, validate_row
+from scraper_monitor import SCRAPER_MONITOR, record_dealer_result, reset_monitor_state
 
 
 def test_valid_row_passes_with_normalization():
@@ -168,3 +167,30 @@ def test_dealer_health_ok_when_majority_valid_and_no_attention():
     assert health["invalid_required_rows"] == 0
     assert health["attention_rows"] == 0
     assert health["top_issues"] == []
+
+def test_record_dealer_result_normalizes_common_aliases():
+    fixed_now = datetime(2024, 1, 1)
+    reset_monitor_state(now=fixed_now)
+
+    record_dealer_result(
+        "Dealer A",
+        [
+            {
+                "Model": "Camry",
+                "Monthly ($)": "$199",
+                "Due at Signing ($)": "$1,999",
+                "Term (months)": "36",
+                "Expires": "01/05/2026",
+                "MSRP ($)": "$28000",
+            }
+        ],
+        run_date=date(2024, 1, 1),
+        now=fixed_now,
+    )
+
+    dealer_state = SCRAPER_MONITOR["dealers"]["Dealer A"]
+
+    assert dealer_state["status"] == "OK"
+    assert dealer_state["total_rows"] == 1
+    assert dealer_state["invalid_required_rows"] == 0
+    assert dealer_state["attention_rows"] == 0

@@ -6,12 +6,32 @@ from typing import Any, Dict, List
 from validation import compute_dealer_health, validate_row
 
 
+_FIELD_ALIASES = {
+    "due_at_signing": ["due_at_signing", "Due at Signing ($)", "Due at Signing"],
+    "monthly": ["monthly", "Monthly ($)", "Monthly"],
+    "model": ["model", "Model"],
+    "expires": ["expires", "Expires"],
+    "term_months": ["term_months", "Term (months)", "Term"],
+    "msrp": ["msrp", "MSRP ($)", "MSRP"],
+}
+
 SCRAPER_MONITOR: Dict[str, Any] = {
     "running": False,
     "started_at": None,
     "updated_at": None,
     "dealers": {},
 }
+
+
+def _first_present(row: Dict[str, Any], keys: List[str]) -> Any:
+    for key in keys:
+        if key in row:
+            return row[key]
+    return None
+
+
+def _normalize_row_fields(row: Dict[str, Any]) -> Dict[str, Any]:
+    return {normalized: _first_present(row, aliases) for normalized, aliases in _FIELD_ALIASES.items()}
 
 
 def _timestamp(now: datetime | None = None) -> datetime:
@@ -42,7 +62,7 @@ def record_dealer_result(
     run_date = run_date or date.today()
     timestamp = _timestamp(now)
 
-    validated_rows = [validate_row(row, run_date) for row in rows]
+    validated_rows = [validate_row(_normalize_row_fields(row), run_date) for row in rows]
     health = compute_dealer_health(validated_rows)
 
     SCRAPER_MONITOR["dealers"][dealer_name] = {
@@ -66,8 +86,3 @@ def record_dealer_exception(dealer_name: str, exc: Exception, now: datetime | No
         "top_issues": [f"exception: {exc}"],
     }
     SCRAPER_MONITOR["updated_at"] = timestamp
-
-
-def finish_monitoring(now: datetime | None = None) -> None:
-    SCRAPER_MONITOR["running"] = False
-    SCRAPER_MONITOR["updated_at"] = _timestamp(now)

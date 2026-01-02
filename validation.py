@@ -11,6 +11,15 @@ _VALID_TERMS = {24, 27, 36, 39, 48, 60, 72}
 _EMPTY_VALUES = {"", "—", "N/A", None}
 
 
+def _first_present(row: Dict[str, Any], keys: List[str]) -> Any:
+    for key in keys:
+        if key in row:
+            return row[key]
+    return None
+
+
+
+
 def _normalize_scalar(value: Any) -> Optional[str]:
     """Convert empty-like values to None and return stripped string."""
     if value in _EMPTY_VALUES:
@@ -48,10 +57,12 @@ def _normalize_expires(value: Any) -> Optional[date]:
     normalized = _normalize_scalar(value)
     if normalized is None:
         return None
-    try:
-        return datetime.strptime(normalized, "%m/%d/%y").date()
-    except (TypeError, ValueError):
-        return None
+    for fmt in ("%m/%d/%y", "%m/%d/%Y"):
+        try:
+            return datetime.strptime(normalized, fmt).date()
+        except (TypeError, ValueError):
+            continue
+    return None
 
 
 def validate_row(row: Dict[str, Any], run_date: date) -> Dict[str, Any]:
