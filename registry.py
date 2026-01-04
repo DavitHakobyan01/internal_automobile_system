@@ -17,6 +17,8 @@ from scrapers.dealers.toyota.south_bay import SouthBayToyotaScraper
 from scrapers.dealers.toyota.manhattan_beach import ManhattanBeachToyotaScraper
 from scrapers.dealers.toyota.torrance import ToyotaTorranceScraper
 from scrapers.dealers.toyota.cabe import CabeToyotaScraper
+from scrapers.dealers.mercedes.los_angeles import LosAngelesMercedesScraper
+from scrapers.dealers.mercedes.beverly_hills import BeverlyHillsMercedesScraper
 
 
 SCRAPERS = [
@@ -37,6 +39,8 @@ SCRAPERS = [
     SouthBayToyotaScraper(),
     ToyotaTorranceScraper(),
     ManhattanBeachToyotaScraper(),
-    CabeToyotaScraper()
+    CabeToyotaScraper(),
+    LosAngelesMercedesScraper(),
+    BeverlyHillsMercedesScraper()
     
 ]
