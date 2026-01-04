@@ -1,5 +1,6 @@
 from datetime import datetime, date
 from typing import Any, Dict, List, Optional
+from dateutil import parser
 
 _REQUIRED_NUMERIC_LIMITS = {
     "monthly": (0, 5000),
@@ -57,12 +58,12 @@ def _normalize_expires(value: Any) -> Optional[date]:
     normalized = _normalize_scalar(value)
     if normalized is None:
         return None
-    for fmt in ("%m/%d/%y", "%m/%d/%Y"):
-        try:
-            return datetime.strptime(normalized, fmt).date()
-        except (TypeError, ValueError):
-            continue
-    return None
+
+    try:
+        return parser.parse(normalized, dayfirst=False, yearfirst=False).date()
+    except (ValueError, TypeError):
+        return None
+
 
 
 def validate_row(row: Dict[str, Any], run_date: date) -> Dict[str, Any]:

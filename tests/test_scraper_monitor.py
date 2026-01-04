@@ -1,5 +1,6 @@
 from datetime import date, datetime
 
+import pytest
 
 from scraper_monitor import SCRAPER_MONITOR, record_dealer_result, reset_monitor_state
 
